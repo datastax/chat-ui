@@ -28,6 +28,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	let embeddingModel: string;
 
+	let thread_id
 	if (values.fromShare) {
 		const conversation = await collections.sharedConversations.findOne({
 			_id: values.fromShare,
@@ -43,6 +44,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		values.preprompt = conversation.preprompt;
 		values.assistantId = conversation.assistantId?.toString();
 		embeddingModel = conversation.embeddingModel;
+
+		thread_id =conversation.thread_id
 	}
 
 	const model = models.find((m) => m.name === values.model);
@@ -69,14 +72,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 	})();
 
-	let thread_id
-	if (values.assistantId)	{
-		let OpenAI;
-		try {
-			OpenAI = (await import("openai")).OpenAI;
-		} catch (e) {
-			throw new Error("Failed to import OpenAI", { cause: e });
-		}
+	if (values.assistantId && thread_id === undefined){
 
 		const oai = await getOpenaiClient()
 		const openai = patch(oai);

@@ -64,7 +64,7 @@ export async function createFile(retrievalFile) {
 	const openai = await getOpenaiClient()
 	let openai_file
 	//todo fix this if
-	if (retrievalFile?.name !== undefined) {
+	if (retrievalFile?.name !== "" || retrievalFile?.name !== undefined) {
 		const file = retrievalFile
 
 		let buffer = Buffer.from(await file.arrayBuffer())
