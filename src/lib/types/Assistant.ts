@@ -4,6 +4,7 @@ import type { Timestamps } from "./Timestamps";
 
 export interface Assistant extends Timestamps {
 	_id: ObjectId;
+	assistant_id?: string;
 	createdById: User["_id"] | string; // user id or session
 	createdByName?: User["username"];
 	avatar?: string;
@@ -14,4 +15,5 @@ export interface Assistant extends Timestamps {
 	preprompt: string;
 	userCount?: number;
 	featured?: boolean;
+	file_ids: any[];
 }

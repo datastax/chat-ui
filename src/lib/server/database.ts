@@ -9,6 +9,7 @@ import type { MessageEvent } from "$lib/types/MessageEvent";
 import type { Session } from "$lib/types/Session";
 import type { Assistant } from "$lib/types/Assistant";
 import type { Report } from "$lib/types/Report";
+import {createAssistant, updateAssistant} from "$lib/server/endpoints/openai/endpointOai";
 
 if (!MONGODB_URL) {
 	throw new Error(
@@ -34,6 +35,27 @@ const users = db.collection<User>("users");
 const sessions = db.collection<Session>("sessions");
 const messageEvents = db.collection<MessageEvent>("messageEvents");
 const bucket = new GridFSBucket(db, { bucketName: "files" });
+
+// Override the `find` method for the assistants collection
+const originalUpdateOne = assistants.updateOne.bind(assistants);
+assistants.updateOne = async function(...args) {
+	// Log or apply side effects here
+	console.log('updateOne called with args:', args);
+	args = await updateAssistant(args)
+
+	// Call the original `find` method and return its result
+	return originalUpdateOne(...args);
+};
+const originalInsertOne = assistants.insertOne.bind(assistants);
+assistants.insertOne = async function(...args) {
+	// Log or apply side effects here
+	console.log('insertOne called with args:', args);
+	args = await createAssistant(args)
+
+	// Call the original `find` method and return its result
+	return originalInsertOne(...args);
+};
+
 
 export { client, db };
 export const collections = {

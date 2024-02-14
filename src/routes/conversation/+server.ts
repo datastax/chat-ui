@@ -7,6 +7,9 @@ import { z } from "zod";
 import type { Message } from "$lib/types/Message";
 import { models, validateModel } from "$lib/server/models";
 import { defaultEmbeddingModel } from "$lib/server/embeddingModels";
+import {ASTRA_API_TOKEN, BASE_URL, OPENAI_API_KEY} from "$env/static/private";
+import { patch } from "$lib/server/endpoints/openai/patch";
+import {getOpenaiClient} from "$lib/server/endpoints/openai/endpointOai";
 
 export const POST: RequestHandler = async ({ locals, request }) => {
 	const body = await request.text();
@@ -66,8 +69,31 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 	})();
 
+	let thread_id
+	if (values.assistantId)	{
+		let OpenAI;
+		try {
+			OpenAI = (await import("openai")).OpenAI;
+		} catch (e) {
+			throw new Error("Failed to import OpenAI", { cause: e });
+		}
+
+		const oai = await getOpenaiClient()
+		const openai = patch(oai);
+
+		const thread = await openai.beta.threads.create(
+			{
+				"body":{
+					"messages": messages,
+				}
+			}
+		)
+		thread_id = thread.id
+	}
+
 	const res = await collections.conversations.insertOne({
 		_id: new ObjectId(),
+		thread_id: thread_id,
 		title: title || "New Chat",
 		messages,
 		model: values.model,

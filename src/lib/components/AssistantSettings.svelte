@@ -19,7 +19,7 @@
 		}[];
 	} | null;
 
-	type AssistantFront = Omit<Assistant, "_id" | "createdById"> & { _id: string };
+	type AssistantFront = Omit<Assistant, "_id" | "createdById"> & { _id: string } & { retrievalFiles : File[]};
 
 	export let form: ActionData;
 	export let assistant: AssistantFront | undefined = undefined;
@@ -40,6 +40,9 @@
 	let inputMessage2 = assistant?.exampleInputs[1] ?? "";
 	let inputMessage3 = assistant?.exampleInputs[2] ?? "";
 	let inputMessage4 = assistant?.exampleInputs[3] ?? "";
+
+	let retrievalFiles = []
+	retrievalFiles.push({"name" : assistant?.retrievalFiles[0] ?? []});
 
 	function resetErrors() {
 		if (form) {
@@ -219,6 +222,26 @@
 					{/each}
 					<p class="text-xs text-red-500">{getError("modelId", form)}</p>
 				</select>
+			</label>
+
+			<label>
+				<span class="mb-1 text-sm font-semibold">Files For Retrieval</span>
+				<div>
+					<div class="relative btn flex h-8 rounded-lg border bg-white px-3 py-1 text-gray-500 shadow-sm transition-all hover:bg-gray-100">
+						<input
+								bind:files={retrievalFiles}
+								name="retrievalFile"
+								class="absolute inset-0 w-full h-full cursor-pointer opacity-0"
+								type="file"
+								accept="*/*"
+						/>
+						<CarbonUpload class="mr-2 text-xs" />
+						Upload
+					</div>
+					{#if (retrievalFiles && retrievalFiles[0]) }
+						<p class="text-xs text-gray-500">{retrievalFiles[0].name ? retrievalFiles[0].name : retrievalFiles[0]}</p>
+					{/if}
+				</div>
 			</label>
 
 			<label>

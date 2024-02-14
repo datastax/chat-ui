@@ -14,6 +14,7 @@ import { abortedGenerations } from "$lib/server/abortedGenerations";
 import { summarize } from "$lib/server/summarize";
 import { uploadFile } from "$lib/server/files/uploadFile";
 import sizeof from "image-size";
+import {endpointOai} from "$lib/server/endpoints/openai/endpointOai";
 
 export async function POST({ request, locals, params, getClientAddress }) {
 	const id = z.string().parse(params.id);
@@ -31,6 +32,10 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	const conv = await collections.conversations.findOne({
 		_id: convId,
 		...authCondition(locals),
+	});
+
+	const assistant = await collections.assistants.findOne({
+		_id: new ObjectId(conv.assistantId),
 	});
 
 	if (!conv) {
@@ -264,7 +269,17 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				: "";
 
 			try {
-				const endpoint = await model.getEndpoint();
+				// TODO: need special endpoint for assistants
+				let endpoint
+				if(conv.assistantId){
+					const endpt = model.endpoints[0]
+					const args = { ...endpt, model: model };
+					args["assistant"] = assistant?.assistant_id
+					endpoint = await endpointOai(args)
+				}
+				else {
+					endpoint = await model.getEndpoint();
+				}
 				for await (const output of await endpoint({ conversation: conv, continue: isContinue })) {
 					// if not generated_text is here it means the generation is not done
 					if (!output.generated_text) {

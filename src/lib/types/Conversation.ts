@@ -7,6 +7,8 @@ import type { Assistant } from "./Assistant";
 export interface Conversation extends Timestamps {
 	_id: ObjectId;
 
+	thread_id?: string;
+
 	sessionId?: string;
 	userId?: User["_id"];
 

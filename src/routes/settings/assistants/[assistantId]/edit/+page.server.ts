@@ -8,6 +8,7 @@ import { z } from "zod";
 import { sha256 } from "$lib/utils/sha256";
 
 import sharp from "sharp";
+import {createFile, getFileNames, getOpenaiClient} from "$lib/server/endpoints/openai/endpointOai";
 
 const newAsssistantSchema = z.object({
 	name: z.string().min(1),
@@ -117,6 +118,15 @@ export const actions: Actions = {
 			}
 		}
 
+		const retrievalFile = formData.retrievalFile
+		const fileNames = await getFileNames(assistant.file_ids)
+		// check if retrieval file is in the list of file names
+		let file_ids = assistant.file_ids
+		if (retrievalFile.size > 0 && !fileNames.includes(retrievalFile.name)) {
+			const file = await createFile(retrievalFile)
+			file_ids = [file.id]
+		}
+
 		const { acknowledged } = await collections.assistants.updateOne(
 			{
 				_id: assistant._id,
@@ -130,6 +140,8 @@ export const actions: Actions = {
 					exampleInputs,
 					avatar: deleteAvatar ? undefined : hash ?? assistant.avatar,
 					updatedAt: new Date(),
+					file_ids: file_ids,
+					assistant_id: assistant.assistant_id,
 				},
 			}
 		);

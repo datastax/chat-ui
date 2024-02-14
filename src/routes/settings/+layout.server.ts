@@ -1,6 +1,7 @@
 import { collections } from "$lib/server/database";
 import { ObjectId } from "mongodb";
 import type { LayoutServerLoad } from "./$types";
+import {getFileNames} from "$lib/server/endpoints/openai/endpointOai";
 
 export const load = (async ({ locals, parent }) => {
 	const { settings } = await parent();
@@ -17,6 +18,7 @@ export const load = (async ({ locals, parent }) => {
 			assistants.map(async (el) => ({
 				...el,
 				_id: el._id.toString(),
+				retrievalFiles: await getFileNames(el?.file_ids),
 				createdById: undefined,
 				createdByMe:
 					el.createdById.toString() === (locals.user?._id ?? locals.sessionId).toString(),

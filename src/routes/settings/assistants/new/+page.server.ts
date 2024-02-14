@@ -7,6 +7,11 @@ import { ObjectId } from "mongodb";
 import { z } from "zod";
 import { sha256 } from "$lib/utils/sha256";
 import sharp from "sharp";
+import {getOpenaiClient} from "$lib/server/endpoints/openai/endpointOai";
+
+import { Readable }	from 'stream';
+import fs from "fs";
+
 
 const newAsssistantSchema = z.object({
 	name: z.string().min(1),
@@ -88,6 +93,10 @@ export const actions: Actions = {
 			hash = await uploadAvatar(new File([image], "avatar.jpg"), newAssistantId);
 		}
 
+		// create file
+		const retrievalFile = formData.retrievalFile
+
+
 		const { insertedId } = await collections.assistants.insertOne({
 			_id: newAssistantId,
 			createdById,
@@ -99,6 +108,7 @@ export const actions: Actions = {
 			updatedAt: new Date(),
 			userCount: 1,
 			featured: false,
+			file_ids: formData.retrievalFile ? [formData.retrievalFile] : [],
 		});
 
 		// add insertedId to user settings

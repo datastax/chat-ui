@@ -16,6 +16,7 @@ import {
 } from "$env/static/private";
 import { ObjectId } from "mongodb";
 import type { ConvSidebar } from "$lib/types/ConvSidebar";
+import {getFileNames} from "$lib/server/endpoints/openai/endpointOai";
 
 export const load: LayoutServerLoad = async ({ locals, depends }) => {
 	depends(UrlDependency.ConversationList);
@@ -99,6 +100,16 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 		.filter((el) => !!el) as ObjectId[];
 
 	const assistants = await collections.assistants.find({ _id: { $in: assistantIds } }).toArray();
+
+	let file_names = []
+	if (settings?.assistants?.length > 0) {
+		for (const assistant of settings.assistants) {
+			const file_ids = assistant.file_ids
+			if (file_ids && file_ids.length > 0) {
+				file_names = await getFileNames(file_ids)
+			}
+		}
+	}
 
 	return {
 		conversations: conversations.map((conv) => {
