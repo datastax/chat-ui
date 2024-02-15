@@ -7,7 +7,6 @@ import { z } from "zod";
 import type { Message } from "$lib/types/Message";
 import { models, validateModel } from "$lib/server/models";
 import { defaultEmbeddingModel } from "$lib/server/embeddingModels";
-import { patch } from "$lib/server/endpoints/openai/patch";
 import {getOpenaiClient} from "$lib/server/endpoints/openai/endpointOai";
 
 export const POST: RequestHandler = async ({ locals, request }) => {
