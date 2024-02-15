@@ -1,5 +1,5 @@
-import vercel from '@sveltejs/adapter-vercel';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import vercel from "@sveltejs/adapter-vercel";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import dotenv from "dotenv";
 
 dotenv.config({ path: "./.env.local" });
@@ -14,7 +14,9 @@ const config = {
   preprocess: vitePreprocess(),
 
   kit: {
-    adapter: vercel(),
+    adapter: vercel({
+      runtime: 'nodejs20.x',
+    }),
 
     paths: {
       base: process.env.APP_BASE || "",
