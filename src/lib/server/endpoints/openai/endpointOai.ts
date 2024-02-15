@@ -1,9 +1,9 @@
 import { z } from "zod";
-import {getPatchedOpenAI, patch} from "./patch"
+import { getPatchedOpenAI } from "./patch"
 import { openAICompletionToTextGenerationStream } from "./openAICompletionToTextGenerationStream";
 import { openAIChatToTextGenerationStream } from "./openAIChatToTextGenerationStream";
 import { buildPrompt } from "$lib/buildPrompt";
-import {ASTRA_API_TOKEN, ASTRA_DB_APPLICATION_TOKEN, BASE_URL, OPENAI_API_KEY} from "$env/static/private";
+import {ASTRA_API_TOKEN, OPENAI_API_KEY} from "$env/static/private";
 import type { Endpoint } from "../endpoints";
 import { format } from "date-fns";
 import {fail} from "@sveltejs/kit";

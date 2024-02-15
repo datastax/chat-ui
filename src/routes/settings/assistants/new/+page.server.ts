@@ -7,11 +7,6 @@ import { ObjectId } from "mongodb";
 import { z } from "zod";
 import { sha256 } from "$lib/utils/sha256";
 import sharp from "sharp";
-import {getOpenaiClient} from "$lib/server/endpoints/openai/endpointOai";
-
-import { Readable }	from 'stream';
-import fs from "fs";
-
 
 const newAsssistantSchema = z.object({
 	name: z.string().min(1),
