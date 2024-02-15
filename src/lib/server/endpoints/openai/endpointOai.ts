@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { patch } from "./patch"
+import {getPatchedOpenAI, patch} from "./patch"
 import { openAICompletionToTextGenerationStream } from "./openAICompletionToTextGenerationStream";
 import { openAIChatToTextGenerationStream } from "./openAIChatToTextGenerationStream";
 import { buildPrompt } from "$lib/buildPrompt";
-import {ASTRA_API_TOKEN, BASE_URL, OPENAI_API_KEY} from "$env/static/private";
+import {ASTRA_API_TOKEN, ASTRA_DB_APPLICATION_TOKEN, BASE_URL, OPENAI_API_KEY} from "$env/static/private";
 import type { Endpoint } from "../endpoints";
 import { format } from "date-fns";
 import {fail} from "@sveltejs/kit";
@@ -25,27 +25,21 @@ export const endpointOAIParametersSchema = z.object({
 });
 
 export async function getOpenaiClient() {
-    let client
-	let OpenAI;
-	try {
-		OpenAI = (await import("openai")).OpenAI;
-	} catch (e) {
-		throw new Error("Failed to import OpenAI", { cause: e });
+
+	let client
+	if (ASTRA_API_TOKEN == undefined) {
+		let OpenAI;
+		try {
+			OpenAI = (await import("openai")).OpenAI;
+		} catch (e) {
+			throw new Error("Failed to import OpenAI", { cause: e });
+		}
+		client = new OpenAI({})
 	}
-   let openaiApiKey = z.string().parse(OPENAI_API_KEY);
-   if (openaiApiKey === undefined) {
-   openaiApiKey=  "none"
-   }
-   const astraApiToken= z.string().parse(ASTRA_API_TOKEN);
-   const baseURL= z.string().parse(BASE_URL);
-   client = new OpenAI({
-		   apiKey: openaiApiKey,
-		   baseURL: baseURL,
-		   defaultHeaders: {
-				   "astra-api-token": astraApiToken,
-		   }
-   })
-   return client
+	else{
+		client = await getPatchedOpenAI({})
+	}
+	return client
 }
 
 export async function getFileNames(file_ids) {
@@ -64,7 +58,7 @@ export async function createFile(retrievalFile) {
 	const openai = await getOpenaiClient()
 	let openai_file
 	//todo fix this if
-	if (retrievalFile?.name !== "" || retrievalFile?.name !== undefined) {
+	if (retrievalFile?.name !== "" && retrievalFile?.name !== undefined) {
 		const file = retrievalFile
 
 		let buffer = Buffer.from(await file.arrayBuffer())
@@ -116,7 +110,10 @@ export async function createAssistant(args){
 	const client = await getOpenaiClient()
 
 	const retrievalFile = args[0].file_ids[0]
-	let openai_file = await createFile(retrievalFile);
+	let openai_file
+	if (retrievalFile?.name !== undefined && retrievalFile?.name !== '') {
+		openai_file = await createFile(retrievalFile);
+	}
 
 	if (args.length > 0) {
 		try {
@@ -150,8 +147,7 @@ export async function endpointOai(
 	const { baseURL, apiKey, completion, model, defaultHeaders, assistant } =
 		endpointOAIParametersSchema.parse(input);
 
-	const oai = await getOpenaiClient()
-	const openai = patch(oai);
+	const openai = await getOpenaiClient()
 
 	if (assistant !== undefined) {
 		return async ({ conversation }) => {

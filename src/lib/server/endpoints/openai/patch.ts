@@ -1,5 +1,5 @@
 import {isRequestOptions} from "openai/core";
-import type OpenAI from "openai";
+import {HF_TOKEN} from "$env/static/private";
 
 class MessagesEnhancer {
     constructor(originalMessages) {
@@ -71,7 +71,42 @@ function enhanceMessages(messages) {
 }
 
 
-export function patch(oai: OpenAI){
-    oai.beta.threads.messages = enhanceMessages(oai.beta.threads.messages);
-    return oai
+export async function getPatchedOpenAI(
+    options: ClientOptions
+) {
+    const base_url = process.env.base_url;
+
+    if (options.baseURL == undefined) {
+        if (base_url !== undefined) {
+            options.baseURL = base_url;
+        } else {
+            options.baseURL = "https://api.openai.com/v1";
+        }
+    }
+    let astraApiToken = process.env.ASTRA_API_TOKEN;
+
+    if (astraApiToken == undefined) {
+        // throw an error
+        throw new Error("ASTRA_API_TOKEN is missing")
+    }
+    if (options.defaultHeaders == undefined) {
+        options.defaultHeaders = {};
+    }
+    options.defaultHeaders = Object.assign({}, options.defaultHeaders,
+        {
+            'astra-api-token': astraApiToken,
+            'api-key': HF_TOKEN,
+        });
+
+    let client
+    let OpenAI;
+    try {
+        OpenAI = (await import("openai")).OpenAI;
+    } catch (e) {
+        throw new Error("Failed to import OpenAI", {cause: e});
+    }
+    client = new OpenAI({...options})
+
+    client.beta.threads.messages = enhanceMessages(client.beta.threads.messages);
+    return client
 }

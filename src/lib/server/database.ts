@@ -1,5 +1,5 @@
 import { MONGODB_URL, MONGODB_DB_NAME, MONGODB_DIRECT_CONNECTION } from "$env/static/private";
-import { GridFSBucket, MongoClient } from "mongodb";
+import {GridFSBucket, MongoClient, ServerApiVersion} from "mongodb";
 import type { Conversation } from "$lib/types/Conversation";
 import type { SharedConversation } from "$lib/types/SharedConversation";
 import type { AbortedGeneration } from "$lib/types/AbortedGeneration";
@@ -17,9 +17,19 @@ if (!MONGODB_URL) {
 	);
 }
 
-const client = new MongoClient(MONGODB_URL, {
-	directConnection: MONGODB_DIRECT_CONNECTION === "true",
-});
+const client = new MongoClient(MONGODB_URL,
+
+	{
+		serverApi: {
+			version: ServerApiVersion.v1,
+			strict: true,
+			deprecationErrors: true,
+		}
+	}
+	//{
+	//directConnection: MONGODB_DIRECT_CONNECTION === "true",
+    //}
+);
 
 export const connectPromise = client.connect().catch(console.error);
 
