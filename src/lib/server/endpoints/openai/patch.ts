@@ -72,7 +72,8 @@ function enhanceMessages(messages) {
 
 
 export async function getPatchedOpenAI(
-    options: ClientOptions
+    options: ClientOptions,
+    model: string
 ) {
     const base_url = process.env.base_url;
 
@@ -92,11 +93,21 @@ export async function getPatchedOpenAI(
     if (options.defaultHeaders == undefined) {
         options.defaultHeaders = {};
     }
+
     options.defaultHeaders = Object.assign({}, options.defaultHeaders,
-        {
-            'astra-api-token': astraApiToken,
-            'api-key': HF_TOKEN,
-        });
+    {
+        'astra-api-token': astraApiToken,
+    });
+    if (model !== undefined) {
+        if (model.startsWith("huggingface")) {
+            options.defaultHeaders = Object.assign({}, options.defaultHeaders,
+                {
+                    'api-key': HF_TOKEN,
+                });
+        }
+    }
+
+
 
     let client
     let OpenAI;

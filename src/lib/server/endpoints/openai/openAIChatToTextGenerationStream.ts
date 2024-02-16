@@ -8,25 +8,29 @@ import type { Stream } from "openai/streaming";
 export async function* openAIChatToTextGenerationStream(
 	completionStream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>
 ) {
-	let generatedText = "";
-	let tokenId = 0;
-	for await (const completion of completionStream) {
-		const { choices } = completion;
-		const content = choices[0]?.delta?.content ?? "";
-		const last = choices[0]?.finish_reason === "stop";
-		if (content) {
-			generatedText = generatedText + content;
+	try {
+		let generatedText = "";
+		let tokenId = 0;
+		for await (const completion of completionStream) {
+			const {choices} = completion;
+			const content = choices[0]?.delta?.content ?? "";
+			const last = choices[0]?.finish_reason === "stop";
+			if (content) {
+				generatedText = generatedText + content;
+			}
+			const output: TextGenerationStreamOutput = {
+				token: {
+					id: tokenId++,
+					text: content ?? "",
+					logprob: 0,
+					special: last,
+				},
+				generated_text: last ? generatedText : null,
+				details: null,
+			};
+			yield output;
 		}
-		const output: TextGenerationStreamOutput = {
-			token: {
-				id: tokenId++,
-				text: content ?? "",
-				logprob: 0,
-				special: last,
-			},
-			generated_text: last ? generatedText : null,
-			details: null,
-		};
-		yield output;
+	} catch (e) {
+		console.error(e);
 	}
 }

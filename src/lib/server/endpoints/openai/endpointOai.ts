@@ -24,7 +24,7 @@ export const endpointOAIParametersSchema = z.object({
 	defaultHeaders: z.record(z.string()).optional(),
 });
 
-export async function getOpenaiClient() {
+export async function getOpenaiClient(model = undefined) {
 
 	let client
 	if (ASTRA_API_TOKEN == undefined) {
@@ -37,7 +37,7 @@ export async function getOpenaiClient() {
 		client = new OpenAI({})
 	}
 	else{
-		client = await getPatchedOpenAI({})
+		client = await getPatchedOpenAI({}, model)
 	}
 	return client
 }
@@ -55,6 +55,7 @@ export async function getFileNames(file_ids) {
 	return fileNames
 }
 export async function createFile(retrievalFile) {
+	// Potentially add support for other embedding models here, currently it's only OpenAI
 	const openai = await getOpenaiClient()
 	let openai_file
 	//todo fix this if
@@ -147,7 +148,7 @@ export async function endpointOai(
 	const { baseURL, apiKey, completion, model, defaultHeaders, assistant } =
 		endpointOAIParametersSchema.parse(input);
 
-	const openai = await getOpenaiClient()
+	const openai = await getOpenaiClient(input.model.name)
 
 	if (assistant !== undefined) {
 		return async ({ conversation }) => {

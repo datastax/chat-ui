@@ -1,6 +1,7 @@
 import type { TextGenerationStreamOutput } from "@huggingface/inference";
 import type OpenAI from "openai";
 import type { Stream } from "openai/streaming";
+import {fail} from "@sveltejs/kit";
 
 /**
  * Transform a stream of OpenAI.Chat.ChatCompletion into a stream of TextGenerationStreamOutput
@@ -10,26 +11,31 @@ export async function* openAIMessageToTextGenerationStream(
 	completionStream: Stream<any>
 ) {
 
-	let generatedText = "";
-	let tokenId = 0;
-	for await (const completion of completionStream) {
+	try {
+		let generatedText = "";
+		let tokenId = 0;
+		for await (const completion of completionStream) {
 
-		const { data } = completion;
-		const content = data[0]?.content[0]?.delta?.value ?? "";
-		//const last = choices[0]?.finish_reason === "stop";
-		if (content) {
-			generatedText = generatedText + content;
+			const {data} = completion;
+			const content = data[0]?.content[0]?.delta?.value ?? "";
+			//const last = choices[0]?.finish_reason === "stop";
+			if (content) {
+				generatedText = generatedText + content;
+			}
+			const output: TextGenerationStreamOutput = {
+				token: {
+					id: tokenId++,
+					text: content ?? "",
+					logprob: 0,
+					special: false,
+				},
+				generated_text: null,
+				details: null,
+			};
+			yield output;
 		}
-		const output: TextGenerationStreamOutput = {
-			token: {
-				id: tokenId++,
-				text: content ?? "",
-				logprob: 0,
-				special: false,
-			},
-			generated_text: null,
-			details: null,
-		};
-		yield output;
+	} catch (e) {
+		console.error(e);
+		return fail(400, {error: true, message: "failed generation with " + e.toString()});
 	}
 }
