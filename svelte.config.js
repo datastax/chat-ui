@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-node";
+import vercel from "@sveltejs/adapter-vercel";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import dotenv from "dotenv";
 
@@ -14,7 +14,9 @@ const config = {
   preprocess: vitePreprocess(),
 
   kit: {
-    adapter: adapter(),
+    adapter: vercel({
+      runtime: 'nodejs20.x',
+    }),
 
     paths: {
       base: process.env.APP_BASE || "",
