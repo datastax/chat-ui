@@ -7,11 +7,7 @@ WORKDIR /app
 
 COPY --link --chown=1000 package-lock.json package.json ./
 
-FROM builder-production as builder
-
 COPY --link --chown=1000 . .
-
-FROM node:20-slim
 
 RUN npm install -g pm2
 
