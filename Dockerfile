@@ -25,4 +25,6 @@ COPY --link --chown=1000 package-lock.json package.json ./
 COPY --chown=1000 --link . .
 RUN chmod +x /app/entrypoint.sh
 
+RUN npm install vite --save-dev
+
 CMD ["/bin/bash", "-c", "/app/entrypoint.sh"]
