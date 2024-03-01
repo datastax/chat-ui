@@ -6,20 +6,10 @@ FROM node:20 as builder-production
 WORKDIR /app
 
 COPY --link --chown=1000 package-lock.json package.json ./
-RUN --mount=type=cache,id=npm-cache-prod,target=/app/.npm \
-        npm set cache /app/.npm && \
-        npm ci --omit=dev
 
 FROM builder-production as builder
 
-RUN --mount=type=cache,id=npm-cache-dev,target=/app/.npm \
-        npm set cache /app/.npm && \
-        npm ci
-
 COPY --link --chown=1000 . .
-
-RUN --mount=type=secret,id=DOTENV_LOCAL,dst=.env.local \
-    npm run build
 
 FROM node:20-slim
 
