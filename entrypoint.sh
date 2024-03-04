@@ -25,5 +25,5 @@ if [ "$INCLUDE_DB" = "true" ] ; then
 
 fi;
 
-#npm run build
+npm run build
 npm run preview -- --host 0.0.0.0 --port 3000
