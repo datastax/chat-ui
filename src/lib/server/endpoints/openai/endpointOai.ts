@@ -9,7 +9,6 @@ import { format } from "date-fns";
 import {fail} from "@sveltejs/kit";
 import {openAIMessageToTextGenerationStream} from "$lib/server/endpoints/openai/openAIMessageToTextGenerationStream";
 import fs from "fs";
-import {ObjectId} from "mongodb";
 
 export const endpointOAIParametersSchema = z.object({
 	weight: z.number().int().positive().default(1),
