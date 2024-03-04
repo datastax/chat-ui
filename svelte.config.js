@@ -24,7 +24,7 @@ const config = {
 			checkOrigin: false,
 		},
         prerender: {
-            default: false
+            crawl: false
         },
 	},
 };
