@@ -29,5 +29,4 @@ RUN npm install vite --save-dev
 
 RUN npm run build
 
-
 CMD ["/bin/bash", "-c", "/app/entrypoint.sh"]
