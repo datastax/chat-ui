@@ -1,3 +1,6 @@
+#!/bin/bash
+
+set -e
 ENV_LOCAL_PATH=/app/.env.local
 
 if test -z "${DOTENV_LOCAL}" ; then
@@ -25,5 +28,5 @@ if [ "$INCLUDE_DB" = "true" ] ; then
 
 fi;
 
-npm run build
+NODE_OPTIONS="--max-old-space-size=512" npm run build
 npm run preview -- --host 0.0.0.0 --port 3000
