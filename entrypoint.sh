@@ -28,5 +28,5 @@ if [ "$INCLUDE_DB" = "true" ] ; then
 fi;
 
 NODE_OPTIONS="--max-old-space-size=512" npm run build
-echo $
+echo $?
 npm run preview -- --host 0.0.0.0 --port 3000
