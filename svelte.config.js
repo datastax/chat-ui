@@ -23,6 +23,9 @@ const config = {
 			// handled in hooks.server.ts, because we can have multiple valid origins
 			checkOrigin: false,
 		},
+        prerender: {
+            default: false
+        },
 	},
 };
 
