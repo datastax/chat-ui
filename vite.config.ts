@@ -28,7 +28,4 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ["browser-image-resizer", "uuid"],
 	},
-    build: {
-      minify: false
-    },
 });
