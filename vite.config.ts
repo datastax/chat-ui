@@ -1,5 +1,5 @@
-import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig, type PluginOption } from "vite";
+import { sveltekit } from '@sveltejs/kit/vite';
 import Icons from "unplugin-icons/vite";
 import { promises } from "fs";
 
@@ -26,6 +26,6 @@ export default defineConfig({
 		loadTTFAsArrayBuffer(),
 	],
 	optimizeDeps: {
-		include: ["browser-image-resizer"],
+		include: ["browser-image-resizer", "uuid"],
 	},
 });
