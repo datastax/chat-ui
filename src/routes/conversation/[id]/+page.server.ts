@@ -1,5 +1,5 @@
 import { collections } from "$lib/server/database";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import { error } from "@sveltejs/kit";
 import { authCondition } from "$lib/server/auth";
 import { UrlDependency } from "$lib/types/UrlDependency";

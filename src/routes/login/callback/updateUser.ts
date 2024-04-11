@@ -1,6 +1,6 @@
 import { refreshSessionCookie } from "$lib/server/auth";
 import { collections } from "$lib/server/database";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import { DEFAULT_SETTINGS } from "$lib/types/Settings";
 import { z } from "zod";
 import type { UserinfoResponse } from "openid-client";

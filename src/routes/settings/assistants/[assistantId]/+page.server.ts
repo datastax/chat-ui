@@ -1,6 +1,6 @@
 import { collections } from "$lib/server/database";
 import { type Actions, fail, redirect } from "@sveltejs/kit";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import { authCondition } from "$lib/server/auth";
 import { base } from "$app/paths";
 import { PUBLIC_ORIGIN, PUBLIC_SHARE_PREFIX } from "$env/static/public";

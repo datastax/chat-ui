@@ -1,7 +1,7 @@
 import { base } from "$app/paths";
 import { collections } from "$lib/server/database.js";
 import { redirect } from "@sveltejs/kit";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 
 export const load = async ({ params }) => {
 	try {

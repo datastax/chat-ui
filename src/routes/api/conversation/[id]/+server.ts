@@ -1,7 +1,7 @@
 import { collections } from "$lib/server/database";
 import { authCondition } from "$lib/server/auth";
 import { z } from "zod";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 
 export async function GET({ locals, params }) {
 	const id = z.string().parse(params.id);

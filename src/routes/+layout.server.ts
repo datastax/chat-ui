@@ -14,7 +14,7 @@ import {
 	USE_LOCAL_WEBSEARCH,
 	ENABLE_ASSISTANTS,
 } from "$env/static/private";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import type { ConvSidebar } from "$lib/types/ConvSidebar";
 import {getFileNames} from "$lib/server/endpoints/openai/endpointOai";
 
@@ -47,6 +47,7 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 	}
 
 	// get the number of messages where `from === "assistant"` across all conversations.
+	/*
 	const totalMessages =
 		(
 			await collections.conversations
@@ -59,10 +60,12 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 				])
 				.toArray()
 		)[0]?.messages ?? 0;
+	 */
 
 	const messagesBeforeLogin = MESSAGES_BEFORE_LOGIN ? parseInt(MESSAGES_BEFORE_LOGIN) : 0;
 
-	const userHasExceededMessages = messagesBeforeLogin > 0 && totalMessages > messagesBeforeLogin;
+	//const userHasExceededMessages = messagesBeforeLogin > 0 && totalMessages > messagesBeforeLogin;
+	const userHasExceededMessages = messagesBeforeLogin > 0 && false;
 
 	const loginRequired = requiresUser && !locals.user && userHasExceededMessages;
 
@@ -80,8 +83,10 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 		  )
 		: null;
 
-	const conversations = await collections.conversations
-		.find(authCondition(locals))
+	const conversations = (await collections.conversations
+		.find(authCondition(locals)).toArray())
+		.sort((a, b) => b.updatedAt - a.updatedAt );
+		/*
 		.sort({ updatedAt: -1 })
 		.project<
 			Pick<Conversation, "title" | "model" | "_id" | "updatedAt" | "createdAt" | "assistantId">
@@ -94,6 +99,7 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 			assistantId: 1,
 		})
 		.toArray();
+		 */
 
 	const assistantIds = conversations
 		.map((conv) => conv.assistantId)

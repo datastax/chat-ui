@@ -1,6 +1,6 @@
 import type { RequestHandler } from "./$types";
 import { collections } from "$lib/server/database";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import { error, redirect } from "@sveltejs/kit";
 import { base } from "$app/paths";
 import { z } from "zod";

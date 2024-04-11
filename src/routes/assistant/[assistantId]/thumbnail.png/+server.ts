@@ -1,7 +1,7 @@
 import ChatThumbnail from "./ChatThumbnail.svelte";
 import { collections } from "$lib/server/database";
 import { error, type RequestHandler } from "@sveltejs/kit";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import type { SvelteComponent } from "svelte";
 
 import { Resvg } from "@resvg/resvg-js";

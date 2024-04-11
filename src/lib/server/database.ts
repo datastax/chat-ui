@@ -1,4 +1,4 @@
-import { MONGODB_URL, MONGODB_DB_NAME, MONGODB_DIRECT_CONNECTION } from "$env/static/private";
+import {MONGODB_URL, MONGODB_DB_NAME, MONGODB_DIRECT_CONNECTION, ASTRA_API_TOKEN} from "$env/static/private";
 import {GridFSBucket, MongoClient, ServerApiVersion} from "mongodb";
 import type { Conversation } from "$lib/types/Conversation";
 import type { SharedConversation } from "$lib/types/SharedConversation";
@@ -10,7 +10,11 @@ import type { Session } from "$lib/types/Session";
 import type { Assistant } from "$lib/types/Assistant";
 import type { Report } from "$lib/types/Report";
 import {createAssistant, updateAssistant} from "$lib/server/endpoints/openai/endpointOai";
+import { AstraDB } from "@datastax/astra-db-ts";
 
+
+
+/*
 if (!MONGODB_URL) {
 	throw new Error(
 		"Please specify the MONGODB_URL environment variable inside .env.local. Set it to mongodb://localhost:27017 if you are running MongoDB locally, or to a MongoDB Atlas free instance for example."
@@ -30,11 +34,19 @@ const client = new MongoClient(MONGODB_URL,
     //directConnection: MONGODB_DIRECT_CONNECTION === "true",
     //}
 );
-
 export const connectPromise = client.connect().catch(console.error);
-
 const db = client.db(MONGODB_DB_NAME + (import.meta.env.MODE === "test" ? "-test" : ""));
+ */
 
+
+const oneClient = new AstraDB(ASTRA_API_TOKEN, "https://8d079cd6-6c71-4c92-9079-23949a2f2b51-us-east1.apps.astra.datastax.com");
+const oneDb = oneClient.db("default_keyspace");
+
+const anotherClient = new AstraDB(ASTRA_API_TOKEN, "https://c12ae9a2-d0ee-4462-bd58-92a9f11e8868-us-east1.apps.astra.datastax.com");
+const anotherDb = anotherClient.db("default_keyspace");
+
+
+/*
 const conversations = db.collection<Conversation>("conversations");
 const assistants = db.collection<Assistant>("assistants");
 const reports = db.collection<Report>("reports");
@@ -44,7 +56,34 @@ const settings = db.collection<Settings>("settings");
 const users = db.collection<User>("users");
 const sessions = db.collection<Session>("sessions");
 const messageEvents = db.collection<MessageEvent>("messageEvents");
-const bucket = new GridFSBucket(db, { bucketName: "files" });
+//const bucket = new GridFSBucket(db, { bucketName: "files" });
+ */
+
+const conversations = oneDb.collection<Conversation>("conversations");
+const assistants = oneDb.collection<Assistant>("assistants");
+const reports = oneDb.collection<Report>("reports");
+const sharedConversations = oneDb.collection<SharedConversation>("sharedConversations");
+const abortedGenerations = oneDb.collection<AbortedGeneration>("abortedGenerations");
+const settings = anotherDb.collection<Settings>("settings");
+const users = anotherDb.collection<User>("users");
+const sessions = anotherDb.collection<Session>("sessions");
+const messageEvents = anotherDb.collection<MessageEvent>("messageEvents");
+
+// TODO: there's gotta be a way to make this faster
+/*
+console.log("Creating collections")
+const conversations = await oneDb.createCollection("conversations")
+const assistants = await oneDb.createCollection("assistants")
+const reports = await oneDb.createCollection("reports")
+const sharedConversations = await oneDb.createCollection("sharedConversations")
+const abortedGenerations = await oneDb.createCollection("abortedGenerations")
+const settings = await anotherDb.createCollection("settings")
+const users = await anotherDb.createCollection("users")
+const sessions = await anotherDb.createCollection("sessions")
+const messageEvents = await anotherDb.createCollection("messageEvents")
+console.log("Created collections")
+ */
+
 
 // Override the `find` method for the assistants collection
 const originalUpdateOne = assistants.updateOne.bind(assistants);
@@ -67,7 +106,8 @@ assistants.insertOne = async function(...args) {
 };
 
 
-export { client, db };
+
+//export { client, db };
 export const collections = {
     conversations,
     assistants,
@@ -78,9 +118,10 @@ export const collections = {
     users,
     sessions,
     messageEvents,
-    bucket,
+    //bucket,
 };
 
+/*
 client.on("open", () => {
     conversations
         .createIndex(
@@ -109,3 +150,4 @@ client.on("open", () => {
     assistants.createIndex({ featured: 1 }).catch(console.error);
     reports.createIndex({ assistantId: 1 }).catch(console.error);
 });
+ */

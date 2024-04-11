@@ -1,6 +1,6 @@
 import { collections } from "$lib/server/database";
 import { error, type RequestHandler } from "@sveltejs/kit";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 
 export const GET: RequestHandler = async ({ params }) => {
 	const assistant = await collections.assistants.findOne({

@@ -15,7 +15,8 @@ async function maintainAbortedGenerations() {
 		await setTimeout(1000);
 
 		try {
-			const aborts = await collections.abortedGenerations.find({}).sort({ createdAt: 1 }).toArray();
+			//const aborts = await collections.abortedGenerations.find({}).sort({ createdAt: 1 }).toArray();
+			const aborts = (await collections.abortedGenerations.find({}).toArray()).sort((a, b) => a.createdAt - b.createdAt);
 
 			abortedGenerations = new Map(
 				aborts.map(({ conversationId, createdAt }) => [conversationId.toString(), createdAt])

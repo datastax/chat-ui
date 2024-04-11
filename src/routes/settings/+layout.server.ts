@@ -1,5 +1,5 @@
 import { collections } from "$lib/server/database";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import type { LayoutServerLoad } from "./$types";
 import {getFileNames} from "$lib/server/endpoints/openai/endpointOai";
 

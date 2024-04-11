@@ -4,7 +4,7 @@ import type { SharedConversation } from "$lib/types/SharedConversation";
 import { getShareUrl } from "$lib/utils/getShareUrl";
 import { hashConv } from "$lib/utils/hashConv";
 import { error } from "@sveltejs/kit";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import { nanoid } from "nanoid";
 
 export async function POST({ params, url, locals }) {

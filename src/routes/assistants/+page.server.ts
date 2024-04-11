@@ -30,12 +30,19 @@ export const load = async ({ url, locals }) => {
 		...(!createdByCurrentUser && { userCount: { $gt: 1 } }),
 		...(createdByName ? { createdByName } : { featured: true }),
 	};
+	/*
 	const assistants = await collections.assistants
 		.find(filter)
 		.skip(NUM_PER_PAGE * pageIndex)
 		.sort({ userCount: -1 })
 		.limit(NUM_PER_PAGE)
 		.toArray();
+	 */
+	const assistants = (await collections.assistants
+		.find(filter, {filter: NUM_PER_PAGE})
+		.toArray()
+    ).sort((a, b) => b.userCount - a.userCount);
+
 
 	const numTotalItems = await collections.assistants.countDocuments(filter);
 

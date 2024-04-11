@@ -2,7 +2,7 @@ import { base } from "$app/paths";
 import { authCondition, requiresUser } from "$lib/server/auth";
 import { collections } from "$lib/server/database";
 import { fail, type Actions, redirect } from "@sveltejs/kit";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 
 import { z } from "zod";
 import { sha256 } from "$lib/utils/sha256";

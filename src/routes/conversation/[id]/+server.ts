@@ -1,11 +1,11 @@
 import { MESSAGES_BEFORE_LOGIN, RATE_LIMIT } from "$env/static/private";
 import { authCondition, requiresUser } from "$lib/server/auth";
-import {collections, db} from "$lib/server/database";
+import {collections} from "$lib/server/database";
 import { models } from "$lib/server/models";
 import { ERROR_MESSAGES } from "$lib/stores/errors";
 import type { Message } from "$lib/types/Message";
 import { error } from "@sveltejs/kit";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import { z } from "zod";
 import type { MessageUpdate } from "$lib/types/MessageUpdate";
 import { runWebSearch } from "$lib/server/websearch/runWebSearch";
@@ -241,20 +241,6 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				}
 			})();
 
-			/*
-			db.collection<Conversation>.updateOne(
-				{
-					_id: convId,
-				},
-				{
-					$set: {
-						messages,
-						title: conv.title,
-						updatedAt: new Date(),
-					},
-				}
-			)
-			 */
 			await collections.conversations.updateOne(
 				{
 					_id: convId,

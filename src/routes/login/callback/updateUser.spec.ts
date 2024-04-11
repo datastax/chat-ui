@@ -2,7 +2,7 @@ import { assert, it, describe, afterEach, vi, expect } from "vitest";
 import type { Cookies } from "@sveltejs/kit";
 import { collections } from "$lib/server/database";
 import { updateUser } from "./updateUser";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import { DEFAULT_SETTINGS } from "$lib/types/Settings";
 import { defaultModel } from "$lib/server/models";
 import { findUser } from "$lib/server/auth";

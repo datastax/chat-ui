@@ -1,6 +1,8 @@
 import adapter from "@sveltejs/adapter-node";
 import { vitePreprocess } from "@sveltejs/kit/vite";
 import dotenv from "dotenv";
+import resolve from "@rollup/plugin-node-resolve";
+
 
 dotenv.config({ path: "./.env.local" });
 dotenv.config({ path: "./.env" });

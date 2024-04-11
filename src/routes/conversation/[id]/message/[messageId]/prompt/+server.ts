@@ -3,7 +3,7 @@ import { authCondition } from "$lib/server/auth";
 import { collections } from "$lib/server/database";
 import { models } from "$lib/server/models";
 import { error } from "@sveltejs/kit";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 
 export async function GET({ params, locals }) {
 	const conv =

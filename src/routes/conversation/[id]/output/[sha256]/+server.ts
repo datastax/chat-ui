@@ -1,7 +1,7 @@
 import { authCondition } from "$lib/server/auth";
 import { collections } from "$lib/server/database";
 import { error } from "@sveltejs/kit";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 import { downloadFile } from "$lib/server/files/downloadFile";
